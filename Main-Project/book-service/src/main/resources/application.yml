@@ -36,8 +36,6 @@ spring:
     url: jdbc:mysql://localhost:3306/book_db?useTimezone=true&serverTimezone=UTC
     user: root
     password: root123
-    schemas:
-      - book_db
 springdoc:
   show-actuator: true
   api-docs:

@@ -2,15 +2,87 @@ version: '3.4'
 
 services:
   naming-server:
-    image: rafaelmen/naming-server:0.0.1-snapshot
+    image: rafaelmen/naming-server:latest
     ports:
       - 8761:8761
     networks:
       - rafa-network
+  cambio-db:
+    image: mysql:8.4
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    ports:
+      - "3307:3307"
+    expose:
+      - 3307
+    environment:
+      TZ: America/Sao_Paulo
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: cambio_db
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_TCP_PORT: 3307
+    networks:
+      - rafa-network
+    depends_on:
+      - naming-server
+  book-db:
+    image: mysql:8.4
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    ports:
+      - "3308:3308"
+    expose:
+      - 3308
+    environment:
+      TZ: America/Sao_Paulo
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: book_db
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_TCP_PORT: 3308
+    networks:
+      - rafa-network
+    depends_on:
+      - naming-server
+  cambio-service:
+    image: rafaelmen/cambio-service
+    build:
+      context: ./cambio-service
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - 8000:8000
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
+      TZ: America/Sao_Paulo
+    networks:
+      - rafa-network
+    depends_on:
+      - naming-server
+      - cambio-db
+  book-service:
+    image: rafaelmen/book-service
+    build:
+      context: ./book-service
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - 8100:8100
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
+      TZ: America/Sao_Paulo
+    networks:
+      - rafa-network
+    depends_on:
+      - naming-server
+      - book-db
   api-gateway:
-    image: rafaelmen/api-gateway:0.0.1-snapshot
+    image: rafaelmen/api-gateway:latest
     ports:
       - 8765:8765
+    depends_on:
+      - naming-server
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
     networks:
       - rafa-network
 networks:
