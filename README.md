@@ -1,4 +1,4 @@
-# Aplicação de Microsserviços Java Spring Boot com Archaius, Eureka e Load Balancer
+# Microsserviços Java Spring Boot com Archaius, Eureka e Load Balancer
 
 ## Descrição
 Este projeto é uma arquitetura de microsserviços que integram **Netflix Archaius** para gerenciamento dinâmico de configurações, **Netflix Eureka** como serviço de descoberta, e um **Load Balancer** para distribuir o tráfego entre instâncias do serviço.
