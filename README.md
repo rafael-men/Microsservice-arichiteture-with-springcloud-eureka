@@ -105,3 +105,10 @@ networks:
 2. **dê o comando docker-compose up para criar os conteineres**
    ```bash
    docker compose up
+   
+3. **Acesse o Eureka Server no navegador**:
+      http://localhost:8761
+
+4. **Teste os microsserviços acessando o endpoint do API Gateway:**
+```bash
+ http://localhost:8080/service-one/endpoint
