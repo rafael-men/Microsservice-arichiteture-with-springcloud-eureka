@@ -7,6 +7,8 @@ Este projeto implementa uma arquitetura baseada em **microsserviços**, utilizan
 - **Netflix Eureka** para descoberta de serviços.
 - **Spring Cloud LoadBalancer** para balanceamento de carga entre as instâncias dos serviços.
 
+---
+
 ## ⚙️ Tecnologias Utilizadas
 
 - **Spring Boot**
@@ -16,6 +18,8 @@ Este projeto implementa uma arquitetura baseada em **microsserviços**, utilizan
 - **Maven**
 - **Docker e Docker Compose** (para facilitar a execução dos serviços)
 
+---
+
 ## ✅ Pré-requisitos
 
 Antes de executar a aplicação, certifique-se de ter instalado:
@@ -23,6 +27,8 @@ Antes de executar a aplicação, certifique-se de ter instalado:
 - **Java 8** ou superior
 - **Maven 3.6.0** ou superior
 - **Docker** e **Docker Compose**
+
+---
 
 ## 🛠️ Como funciona o Eureka?
 
@@ -32,29 +38,70 @@ O **Eureka Server** atua como um **registro de serviços**, permitindo que os mi
 2. Os serviços clientes (microsserviços) se registram automaticamente no Eureka Server.
 3. O balanceador de carga usa o Eureka para rotear chamadas entre as instâncias disponíveis.
 
+---
+
 ## 🚀 Como executar com Docker Compose
 
+Crie um arquivo `docker-compose.yml` na raiz do projeto. Aqui está um exemplo de configuração:
 
-Crie um arquivo `docker-compose.yml` na raiz do projeto:
+```yaml
+version: '3.8'
 
+services:
+  eureka-server:
+    image: eureka-server
+    build:
+      context: ./eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - microservices-network
+
+  api-gateway:
+    image: api-gateway
+    build:
+      context: ./api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - EUREKA_SERVER=http://eureka-server:8761/eureka
+    depends_on:
+      - eureka-server
+    networks:
+      - microservices-network
+
+  service-one:
+    image: service-one
+    build:
+      context: ./service-one
+    environment:
+      - EUREKA_SERVER=http://eureka-server:8761/eureka
+    depends_on:
+      - eureka-server
+    networks:
+      - microservices-network
+
+  service-two:
+    image: service-two
+    build:
+      context: ./service-two
+    environment:
+      - EUREKA_SERVER=http://eureka-server:8761/eureka
+    depends_on:
+      - eureka-server
+    networks:
+      - microservices-network
+
+networks:
+  microservices-network:
+    driver: bridge
+```
 ## 🏃‍♂️ Rodando a aplicação
 
-Clone o repositório:
-
-
-git clone https://github.com/seu-repositorio/microsservicos-eureka.git
-cd microsservicos-eureka
-
-Construa as imagens dos serviços:
-
-docker-compose build
-
-Inicie os containers:
-
-docker-compose up -d
-
-Acesse o Eureka Server no navegador:
-
-http://localhost:8761
-
-Teste os microsserviços acessando o endpoint do API Gateway
+1. **Clone o repositório**:
+   ```bash
+   git clone https://github.com/seu-repositorio/microsservicos-eureka.git
+   cd microsservicos-eureka
+2. **dê o comando docker-compose up para criar os conteineres**
+   ```bash
+   docker compose up
